@@ -1,0 +1,11 @@
+pandas
+numpy
+geopandas
+shapely
+pystac-client
+planetary-computer
+rasterio
+rioxarray
+pyproj
+pillow
+tqdm

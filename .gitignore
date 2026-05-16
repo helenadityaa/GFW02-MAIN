@@ -1,0 +1,22 @@
+# Python cache and local environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.vs/
+
+# Large local/generated artifacts
+*.zip
+*.part
+*.tif
+*.tiff
+*.png
+
+# SAR pipeline generated data
+GFW_SAR_PATCH_EEZINDO/data/
+GFW_SAR_PATCH_EEZINDO/outputs/
+
+# Generated map artifacts
+ARSIP_TAMBAHAN_API_MAP_20260512/sar_popup_images/
+ARSIP_TAMBAHAN_API_MAP_20260512/*.geojson
+ARSIP_TAMBAHAN_API_MAP_20260512/*.html

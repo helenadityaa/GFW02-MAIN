@@ -1,0 +1,36 @@
+PowerShell commands dari folder project:
+
+Set-Location "D:\FILE ALE\GFW02\GFW_SAR_PATCH_EEZINDO"
+
+py .\src\01_audit_input_csv.py --input_csv "..\output\GFW_SAR_EEZ_Indonesia_202602_202603.csv" --output_dir .\outputs\metrics
+
+py .\src\02_prepare_raw_records.py --input_csv "..\output\GFW_SAR_EEZ_Indonesia_202602_202603.csv" --output_csv .\data\selected_samples\selected_raw_records.csv --limit 100
+
+py .\src\03_build_opensarship_structure.py
+
+py .\src\04_download_sentinel1_scenes_from_stac.py --records_csv .\data\selected_samples\selected_raw_records.csv --output_dir .\data\work\downloaded_scenes --collection sentinel-1-rtc --time_window_hours 12 --limit 10
+
+Opsional kalau mau jalan aman 1 scene lengkap dulu:
+
+py .\src\04_download_sentinel1_scenes_from_stac.py --records_csv .\data\selected_samples\selected_raw_records.csv --output_dir .\data\work\downloaded_scenes --collection sentinel-1-rtc --time_window_hours 12 --limit 10 --max_success 1 --download_retries 5 --retry_wait_seconds 30
+
+py .\src\05_preprocess_sentinel1_scenes.py --download_manifest .\data\opensarship_like\metadata\download_manifest.csv --output_dir .\data\work\preprocessed_scenes
+
+py .\src\06_crop_ship_chips.py --records_csv .\data\selected_samples\selected_raw_records.csv --preprocess_manifest .\data\opensarship_like\metadata\preprocess_manifest.csv --output_patch_dir .\data\opensarship_like\Patch --patch_size 128 --limit 10
+
+py .\src\07_make_patch_cal.py --patch_dir .\data\opensarship_like\Patch --output_dir .\data\opensarship_like\Patch_Cal
+
+py .\src\08_make_patch_uint8.py --patch_cal_dir .\data\opensarship_like\Patch_Cal --output_dir .\data\opensarship_like\Patch_Uint8
+
+py .\src\09_make_patch_rgb.py --patch_uint8_dir .\data\opensarship_like\Patch_Uint8 --output_dir .\data\opensarship_like\Patch_RGB --style grayscale
+
+py .\src\10_build_dataset_metadata.py --records_csv .\data\selected_samples\selected_raw_records.csv --download_manifest .\data\opensarship_like\metadata\download_manifest.csv --preprocess_manifest .\data\opensarship_like\metadata\preprocess_manifest.csv --crop_manifest .\data\opensarship_like\metadata\crop_manifest.csv --patch_cal_manifest .\data\opensarship_like\metadata\patch_cal_manifest.csv --patch_uint8_manifest .\data\opensarship_like\metadata\patch_uint8_manifest.csv --patch_rgb_manifest .\data\opensarship_like\metadata\patch_rgb_manifest.csv --output_dir .\data\opensarship_like\metadata
+
+py .\src\11_build_ship_xml.py --metadata_csv .\data\opensarship_like\metadata\dataset_metadata.csv --output_xml .\data\opensarship_like\XML\Ship.xml
+
+py .\src\12_build_metedata_xml.py --metadata_csv .\data\opensarship_like\metadata\dataset_metadata.csv --output_xml .\data\opensarship_like\XML\Metedata.xml
+
+Catatan:
+- Jangan pakai "cd /d" di PowerShell. Itu command CMD.
+- Kalau dependency belum ada, jalankan: py -m pip install -r requirements.txt
+- Tahap 04 butuh koneksi internet untuk akses Microsoft Planetary Computer STAC dan download Sentinel-1 RTC.
